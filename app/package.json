@@ -1,0 +1,14 @@
+{
+  "name": "nginx-reverse-proxy-starter-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Example Node.js backend for the nginx reverse proxy starter",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
