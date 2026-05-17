@@ -1,0 +1,19 @@
+name: nginx-reverse-proxy-starter
+owner: kikplate-public
+verification_token: d4864f00-8988-42bf-aa1d-54ea18146f76
+description: Production-ready NGINX reverse proxy starter with a Node.js upstream, Docker Compose, health checks, security headers, and local plus container entrypoints.
+version: 1.0.0
+
+category: backend
+
+tags:
+  - nginx
+  - reverse-proxy
+  - nodejs
+  - express
+  - docker
+  - docker-compose
+  - health-checks
+  - security
+  - starter
+  - boilerplate
