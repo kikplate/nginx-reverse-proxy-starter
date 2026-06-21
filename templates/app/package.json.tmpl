@@ -1,8 +1,8 @@
 {
-  "name": "nginx-reverse-proxy-starter-app",
+  "name": "{{ .projectName | slugify }}-app",
   "version": "1.0.0",
   "private": true,
-  "description": "Example Node.js backend for the nginx reverse proxy starter",
+  "description": "Example Node.js backend for {{ .projectName }}",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
