@@ -1,4 +1,4 @@
-FROM node:22-alpine
+FROM {{ .nodeImage }}
 
 WORKDIR /app
 
@@ -7,6 +7,6 @@ RUN npm install --omit=dev
 
 COPY server.js ./
 
-EXPOSE 3000
+EXPOSE {{ .appPort }}
 
 CMD ["npm", "start"]

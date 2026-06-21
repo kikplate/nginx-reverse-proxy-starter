@@ -1,0 +1,156 @@
+# {{ .projectName }}
+
+[![View on KikPlate](https://img.shields.io/static/v1?label=KikPlate&message={{ .kikplateSlug }}&color={{ .kikplateBadgeColor }}&style=flat-square)](https://kikplate.dev/plates/{{ .kikplateSlug }})
+
+{{ .projectDescription }}
+
+## Features
+
+- NGINX reverse proxy in front of a Node.js backend
+- Separate local and Docker NGINX entry configs
+- WebSocket-ready proxy headers
+{{ if .modules.securityHeaders.enabled }}
+- Security headers applied at the proxy layer
+{{ end }}
+- Health checks for both proxy and upstream app
+{{ if .modules.docker.enabled }}
+- Docker Compose stack for full local orchestration
+- Rootless NGINX container listening on port {{ .proxyPort }}
+{{ end }}
+
+## Architecture
+
+Client -> NGINX :{{ .proxyPort }} -> Node.js app :{{ .appPort }}
+
+## Project Structure
+
+```text
+{{ .projectName | slugify }}/
+├── .dockerignore
+├── .gitignore
+{{ if .modules.docker.enabled }}
+├── Dockerfile
+{{ end }}
+├── README.md
+{{ if .modules.docker.enabled }}
+├── docker-compose.yml
+{{ end }}
+├── mime.types
+├── nginx.conf
+{{ if .modules.docker.enabled }}
+├── nginx.docker.conf
+{{ end }}
+├── app/
+{{ if .modules.docker.enabled }}
+│   ├── Dockerfile
+{{ end }}
+│   ├── package.json
+│   └── server.js
+└── conf.d/
+    ├── proxy.conf
+{{ if .modules.securityHeaders.enabled }}
+    └── security.conf
+{{ end }}
+```
+
+## Quick Start
+
+{{ if .modules.docker.enabled }}
+## Option A: Docker Compose
+
+This is the fastest way to run the full reverse proxy stack.
+
+```bash
+docker compose up --build
+```
+
+Open http://localhost:{{ .proxyPort }}
+
+Useful checks:
+
+```bash
+curl http://localhost:{{ .proxyPort }}/
+curl http://localhost:{{ .proxyPort }}/health
+curl http://localhost:{{ .proxyPort }}/nginx-health
+```
+
+Stop the stack:
+
+```bash
+docker compose down
+```
+{{ end }}
+
+## Option B: Native Local Development
+
+Start the example backend:
+
+```bash
+cd app
+npm install
+npm start
+```
+
+In another terminal, from the project root, validate and start NGINX:
+
+```bash
+nginx -t -c $(pwd)/nginx.conf -p $(pwd)
+nginx -c $(pwd)/nginx.conf -p $(pwd)
+```
+
+Reload after config changes:
+
+```bash
+nginx -t -c $(pwd)/nginx.conf -p $(pwd)
+nginx -s reload -c $(pwd)/nginx.conf -p $(pwd)
+```
+
+Stop NGINX:
+
+```bash
+nginx -s stop -c $(pwd)/nginx.conf -p $(pwd)
+```
+
+## Configuration
+
+- [nginx.conf](nginx.conf) is the native local entrypoint. It proxies to `127.0.0.1:{{ .appPort }}`.
+{{ if .modules.docker.enabled }}
+- [nginx.docker.conf](nginx.docker.conf) is the container entrypoint. It proxies to the Compose service `app:{{ .appPort }}`.
+{{ end }}
+- [conf.d/proxy.conf](conf.d/proxy.conf) contains the shared reverse proxy server block.
+{{ if .modules.securityHeaders.enabled }}
+- [conf.d/security.conf](conf.d/security.conf) contains proxy-level security headers.
+{{ end }}
+- [app/server.js](app/server.js) is the example upstream application.
+
+## Best-Practice Notes
+
+- The proxy listens on `{{ .proxyPort }}` in both local and Docker modes so the public port stays consistent.
+{{ if .modules.docker.enabled }}
+- The Docker image uses `{{ .nginxImage }}`, which avoids binding privileged ports as root.
+{{ end }}
+- Access and error logs are sent to stdout and stderr, which works cleanly in both containers and local runs.
+- The proxy exposes an internal `/nginx-health` endpoint while the application exposes `/health`.
+- Upgrade and connection headers are configured so WebSocket-style traffic can be proxied correctly.
+
+{{ if .modules.docker.enabled }}
+## Docker Files
+
+Build the proxy image only:
+
+```bash
+docker build -t {{ .projectName | slugify }} .
+```
+
+Build the backend image only:
+
+```bash
+docker build -t {{ .projectName | slugify }}-app ./app
+```
+{{ end }}
+
+## Extend This Starter
+
+- Replace [app/server.js](app/server.js) with your real upstream service.
+- Add TLS termination in NGINX if you want the proxy to own HTTPS.
+- Add rate limiting, caching, or path-based routing in [conf.d/proxy.conf](conf.d/proxy.conf) as your traffic model becomes clearer.

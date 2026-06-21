@@ -1,0 +1,122 @@
+name: nginx-reverse-proxy-starter
+owner: kikplate-public
+verification_token: 1538f39c-dbfb-4c70-a583-4dbed5b5594f
+description: Production-ready NGINX reverse proxy starter with a Node.js upstream, Docker Compose, health checks, security headers, and local plus container entrypoints.
+version: 1.0.0
+
+category: backend
+
+tags:
+  - nginx
+  - reverse-proxy
+  - nodejs
+  - express
+  - docker
+  - docker-compose
+  - health-checks
+  - security
+  - starter
+  - boilerplate
+
+schema:
+  projectName:
+    type: string
+    default: nginx-reverse-proxy-starter
+  projectDescription:
+    type: string
+    default: Production-ready NGINX reverse proxy starter with a Node.js upstream, Docker Compose, health checks, security headers, and local plus container entrypoints.
+  kikplateSlug:
+    type: string
+    default: nginx-reverse-proxy-starter
+  kikplateBadgeColor:
+    type: string
+    default: 0366d6
+  proxyPort:
+    type: int
+    default: 8080
+  appPort:
+    type: int
+    default: 3000
+  proxyContainerName:
+    type: string
+    default: nginx-reverse-proxy
+  appContainerName:
+    type: string
+    default: nginx-reverse-proxy-app
+  nginxImage:
+    type: string
+    default: nginxinc/nginx-unprivileged:stable-alpine
+  nodeImage:
+    type: string
+    default: node:22-alpine
+  workerConnections:
+    type: int
+    default: 1024
+  keepaliveTimeout:
+    type: int
+    default: 65
+  clientMaxBodySize:
+    type: string
+    default: 16m
+  gzipEnabled:
+    type: bool
+    default: true
+  gzipMinLength:
+    type: int
+    default: 1024
+  upstreamKeepalive:
+    type: int
+    default: 32
+  proxyConnectTimeout:
+    type: string
+    default: 5s
+  proxySendTimeout:
+    type: string
+    default: 60s
+  proxyReadTimeout:
+    type: string
+    default: 60s
+
+modules:
+  docker:
+    enabled: true
+  securityHeaders:
+    enabled: true
+
+files:
+  - path: .dockerignore
+    template: https://raw.githubusercontent.com/kikplate/nginx-reverse-proxy-starter/main/templates/.dockerignore.tmpl
+    condition: modules.docker.enabled
+  - path: .gitignore
+    template: https://raw.githubusercontent.com/kikplate/nginx-reverse-proxy-starter/main/templates/.gitignore.tmpl
+  - path: Dockerfile
+    template: https://raw.githubusercontent.com/kikplate/nginx-reverse-proxy-starter/main/templates/Dockerfile.tmpl
+    condition: modules.docker.enabled
+  - path: LICENSE
+    template: https://raw.githubusercontent.com/kikplate/nginx-reverse-proxy-starter/main/templates/LICENSE.tmpl
+  - path: README.md
+    template: https://raw.githubusercontent.com/kikplate/nginx-reverse-proxy-starter/main/templates/README.md.tmpl
+  - path: app/Dockerfile
+    template: https://raw.githubusercontent.com/kikplate/nginx-reverse-proxy-starter/main/templates/app/Dockerfile.tmpl
+    condition: modules.docker.enabled
+  - path: app/package-lock.json
+    template: https://raw.githubusercontent.com/kikplate/nginx-reverse-proxy-starter/main/templates/app/package-lock.json.tmpl
+  - path: app/package.json
+    template: https://raw.githubusercontent.com/kikplate/nginx-reverse-proxy-starter/main/templates/app/package.json.tmpl
+  - path: app/server.js
+    template: https://raw.githubusercontent.com/kikplate/nginx-reverse-proxy-starter/main/templates/app/server.js.tmpl
+  - path: conf.d/proxy.conf
+    template: https://raw.githubusercontent.com/kikplate/nginx-reverse-proxy-starter/main/templates/conf.d/proxy.conf.tmpl
+  - path: conf.d/security.conf
+    template: https://raw.githubusercontent.com/kikplate/nginx-reverse-proxy-starter/main/templates/conf.d/security.conf.tmpl
+    condition: modules.securityHeaders.enabled
+  - path: docker-compose.yml
+    template: https://raw.githubusercontent.com/kikplate/nginx-reverse-proxy-starter/main/templates/docker-compose.yml.tmpl
+    condition: modules.docker.enabled
+  - path: mime.types
+    template: https://raw.githubusercontent.com/kikplate/nginx-reverse-proxy-starter/main/templates/mime.types.tmpl
+  - path: nginx.conf
+    template: https://raw.githubusercontent.com/kikplate/nginx-reverse-proxy-starter/main/templates/nginx.conf.tmpl
+  - path: nginx.docker.conf
+    template: https://raw.githubusercontent.com/kikplate/nginx-reverse-proxy-starter/main/templates/nginx.docker.conf.tmpl
+    condition: modules.docker.enabled
